@@ -338,4 +338,4 @@ detailed explanations, cool features, and exercises to boost your skills. Give i
 
 <a href="https://jsm.dev/react25-jsmpro" target="_blank">
   <img src="public/readme/jsmpro.png" alt="Project Banner">
-</a>
+</a># adverty-fe
