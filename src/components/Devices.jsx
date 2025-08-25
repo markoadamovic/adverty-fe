@@ -3,9 +3,9 @@ import React, { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import MultiSelectDropdown from "./MultiSelectDropdown.jsx"
 import { getValidAccessToken } from "../utils/auth.js"
+import DevicesTable from "./DevicesTable.jsx"
 
 const API_BASE_URL = "http://localhost:8080"
-const accountId = localStorage.getItem("accountId")
 
 function useDebounce(value, delay = 400) {
   const [debounced, setDebounced] = useState(value)
@@ -18,6 +18,7 @@ function useDebounce(value, delay = 400) {
 
 const Devices = () => {
   const navigate = useNavigate()
+  const accountId = localStorage.getItem("accountId")
 
   const [devices, setDevices] = useState([])
   const [filters, setFilters] = useState({
@@ -61,7 +62,7 @@ const Devices = () => {
       const token = await getValidAccessToken()
       if (!token) { navigate("/"); return }
 
-      try {
+      try {   
         setError(null)
         const res = await fetch(`${API_BASE_URL}/account/${accountId}/filter`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -217,42 +218,12 @@ const Devices = () => {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        {loading && <div className="p-4 text-sm text-gray-600">Loading devices…</div>}
-        {error && <div className="p-4 text-sm text-red-600 break-words">{error}</div>}
-        {!loading && !error && (
-          <table className="min-w-full">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border">Name</th>
-                <th className="py-2 px-4 border">Active</th>
-                <th className="py-2 px-4 border">Heartbeat</th>
-                <th className="py-2 px-4 border">Campaign</th>
-                <th className="py-2 px-4 border">Location</th>
-              </tr>
-            </thead>
-            <tbody>
-              {devices.map((d) => (
-                <tr key={d.id} className="text-center border-t">
-
-                  <td className="py-2 px-4">{d.name}</td>
-                  <td className="py-2 px-4">{d.active ? "✅" : "❌"}</td>
-                  <td className="py-2 px-4">{d.heartbeat ? String(d.heartbeat) : "-"}</td>
-                  <td className="py-2 px-4">{d.campaignName || "-"}</td>
-                  <td className="py-2 px-4">{d.locationName || "-"}</td>
-                </tr>
-              ))}
-              {devices.length === 0 && (
-                <tr>
-                  <td className="py-6 text-center text-gray-500" colSpan="6">
-                    No devices match your filters.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
-      </div>
+      <DevicesTable
+        devices={devices}
+        loading={loading}
+        error={error}
+        onRetry={() => setPage(p => p)} // triggers refetch effect
+      />      
 
       {/* Pagination */}
       <div className="flex items-center justify-between mt-4">
