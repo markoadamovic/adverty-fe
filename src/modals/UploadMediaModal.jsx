@@ -1,10 +1,9 @@
-// src/modals/UploadMediaModal.jsx
-import React, { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import ModalShell from "./ModalShell.jsx"
 import { getValidAccessToken } from "../utils/auth.js"
 import Dropzone from "../components/Dropzone.jsx"
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080"
+const API_BASE_URL = "http://localhost:8080"
 
 export default function UploadMediaModal({ open, campaignId, onClose, onUploaded }) {
   const [defaultDuration, setDefaultDuration] = useState(5) // seconds

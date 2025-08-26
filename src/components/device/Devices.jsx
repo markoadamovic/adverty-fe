@@ -1,8 +1,8 @@
 // src/components/Devices.jsx
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import MultiSelectDropdown from "./MultiSelectDropdown.jsx"
-import { getValidAccessToken } from "../utils/auth.js"
+import MultiSelectDropdown from ".././MultiSelectDropdown.jsx"
+import { getValidAccessToken } from "../../utils/auth.js"
 import DevicesTable from "./DevicesTable.jsx"
 
 const API_BASE_URL = "http://localhost:8080"

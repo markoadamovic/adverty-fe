@@ -1,19 +1,15 @@
-// src/pages/Campaigns.jsx
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { getValidAccessToken } from "../utils/auth.js"
-import CreateCampaignDialog from "../modals/CreateCampaignDialog.jsx"
-import useDebounce from "../utils/useDebounce.js"
-import CampaignRow from "../components/CampaignRow.jsx"
+import { getValidAccessToken } from "../../utils/auth.js"
+import CreateCampaignDialog from "./CreateCampaignDialog.jsx"
+import useDebounce from "../../utils/useDebounce.js"
+import CampaignRow from "./CampaignRow.jsx"
 import {
-  listCampaigns as apiListCampaigns,
+  getCampaigns as apiGetCampaigns,
   createCampaign as apiCreateCampaign,
   postCampaignAction as apiPostCampaignAction,
   deleteCampaign as apiDeleteCampaign,
-} from "../services/campaignApi.js"
-
-const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL
-
+} from "../../services/campaignApi.js"
 
 export default function Campaigns() {
   const navigate = useNavigate()
@@ -42,7 +38,7 @@ export default function Campaigns() {
       try {
         setLoading(true)
         setError(null)
-        const data = await apiListCampaigns({token, accountId})
+        const data = await apiGetCampaigns({token, accountId})
         setCampaigns(data)
       } catch (e) {
         setError(e.message)

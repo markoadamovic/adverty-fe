@@ -7,7 +7,7 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-400 shadow-md p-4">
         <div className="text-purple-400 font-extrabold text-2xl px-4 py-6 border-b border-gray-700">
-          adverty
+          adam
           </div>
         <nav className="flex flex-col space-y-3">
           <Link to="/dashboard/home" className="hover:text-purple-500">Home</Link>

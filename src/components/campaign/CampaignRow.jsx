@@ -1,7 +1,5 @@
-// src/components/CampaignRow.jsx
-import React from "react"
-import ActionButton from "./ActionButton.jsx"
-import { canDeploy, canPlay, canStop, canDelete } from "../utils/CampaignActions.js"
+import ActionButton from "../ActionButton.jsx"
+import { canDeploy, canPlay, canStop, canDelete } from "../../utils/CampaignActions.js"
 
 export default function CampaignRow({
   campaign,

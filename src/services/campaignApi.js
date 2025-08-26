@@ -1,8 +1,6 @@
-
-
 const API_BASE_URL = "http://localhost:8080"
 
-export async function listCampaigns({ token, accountId }) {
+export async function getCampaigns({ token, accountId }) {
   const res = await fetch(`${API_BASE_URL}/account/${accountId}/campaign`, {
     headers: {
       Authorization: `Bearer ${token}`,

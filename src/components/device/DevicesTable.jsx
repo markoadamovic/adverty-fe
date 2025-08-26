@@ -1,5 +1,4 @@
-import React from "react"
-import { formatHeartbeat } from "../utils/formatters.js"
+import { formatHeartbeat } from "../../utils/formatters"
 
 export default function DevicesTable({
   devices,

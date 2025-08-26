@@ -2,17 +2,9 @@
 import React, { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getValidAccessToken } from "../utils/auth.js"
+import useDebounce from "../utils/useDebounce.js"
 
 const API_BASE_URL = "http://localhost:8080"
-
-function useDebounce(value, delay = 400) {
-  const [debounced, setDebounced] = useState(value)
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay)
-    return () => clearTimeout(t)
-  }, [value, delay])
-  return debounced
-}
 
 export default function Locations() {
   const navigate = useNavigate()

@@ -1,14 +1,13 @@
-import React from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
 import Login from "./components/Login"
-import Devices from "./components/Devices"
+import Devices from "./components/device/Devices"
 import DashboardLayout from "./components/DashboardLayout"
 
 // Optional: other dashboard pages
 import Home from "./components/Home"
 import Locations from "./components/Locations"
-import Campaigns from "./components/Campaigns"
-import CampaignDetail from "./components/CampaignDetail"
+import Campaigns from "./components/campaign/Campaigns"
+import CampaignDetail from "./components/campaign/CampaignDetail"
 
 function App() {
   return (

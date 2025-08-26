@@ -1,14 +1,14 @@
 // src/pages/CampaignDetail.jsx
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { getValidAccessToken } from "../utils/auth.js"
+import { getValidAccessToken } from "../../utils/auth.js"
 
-import AssignDevicesModal from "../modals/AssignDevicesModal.jsx"
-import UploadMediaModal from "../modals/UploadMediaModal.jsx"
+import AssignDevicesModal from "../../modals/AssignDevicesModal.jsx"
+import UploadMediaModal from "../../modals/UploadMediaModal.jsx"
 
-import CampaignSummary from "../components/CampaignSummary.jsx"
-import DevicesTable from "../components/DevicesTable.jsx"
-import MediaItemsTable from "../components/MediaItemsTable.jsx"
+import CampaignSummary from "./CampaignSummary.jsx"
+import DevicesTable from "../device/DevicesTable.jsx"
+import MediaItemsTable from "../MediaItemsTable.jsx"
 
 const API_BASE_URL = "http://localhost:8080"
 
