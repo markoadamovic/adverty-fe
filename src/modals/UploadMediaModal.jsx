@@ -105,7 +105,7 @@ export default function UploadMediaModal({ open, campaignId, onClose, onUploaded
         </div>
 
         <Dropzone
-            busy={isUploading   }
+            busy={isUploading}
             onFiles={(files) => files.forEach(f => uploadOneFile(f, defaultDuration))}
             >
             <p className="mb-2">Drag & drop images/videos here</p>
