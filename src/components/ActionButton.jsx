@@ -18,3 +18,5 @@ const ActionButton = ({ label, title, variant = "default", onClick }) => {
       </button>
     )
   }
+
+  export default ActionButton

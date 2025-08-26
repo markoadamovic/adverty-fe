@@ -1,20 +1,13 @@
 // src/pages/Campaigns.jsx
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getValidAccessToken } from "../utils/auth.js"
 import CreateCampaignDialog from "../modals/CreateCampaignDialog.jsx"
+import { canDeploy, canPlay, canStop, canDelete } from "../utils/CampaignActions.js"
+import ActionButton from "../components/ActionButton.jsx"
+import useDebounce from "../utils/useDebounce.js"
 
 const API_BASE_URL = "http://localhost:8080"
-
-// debounce like in Locations
-function useDebounce(value, delay = 400) {
-  const [debounced, setDebounced] = useState(value)
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), delay)
-    return () => clearTimeout(t)
-  }, [value, delay])
-  return debounced
-}
 
 export default function Campaigns() {
   const navigate = useNavigate()
@@ -109,26 +102,6 @@ export default function Campaigns() {
     }
   }
 
-
-  const S = (s) => String(s || "").toUpperCase()
-  const canDeploy = (c) => {
-    const st = S(c.campaignStatus)
-    return st === "PREPARED" || st === "RETIRED" || st === "UPLOAD_ERROR"
-  }
-  const canPlay = (c) => S(c.campaignStatus) === "READY"
-  const canStop = (c) => {
-    const st = S(c.campaignStatus)
-    return st === "RUNNING" || st === "PARTIALLY_RUNNING"
-  }
-  const canDelete = (c) => {
-    const st = S(c.campaignStatus)
-    return (
-      st !== "RUNNING" ||
-      st !== "PARTIALLY_RUNNING" ||
-      st !== "DEPLOYING"
-    )
-  }
-
   // action handlers (wire APIs after you share them)
   const stopRow = (e) => { e.stopPropagation(); e.preventDefault() }
 
@@ -196,28 +169,6 @@ export default function Campaigns() {
     alert(err.message || "Unable to delete campaign")
   }
 }
-
-  // small button component
-  const ActionButton = ({ label, title, variant = "default", onClick }) => {
-    const base =
-      "px-2 py-1 text-xs rounded-md border transition focus:outline-none focus:ring-2 focus:ring-offset-1"
-    const styles = {
-      default: `${base} bg-blue-600 text-white border-blue-600 hover:bg-blue-700`,
-      success: `${base} bg-green-600 text-white border-green-600 hover:bg-green-700`,
-      warn: `${base} bg-orange-600 text-white border-orange-600 hover:bg-orange-700`,
-      danger: `${base} bg-rose-600 text-white border-rose-600 hover:bg-rose-700`,
-    }
-    return (
-      <button
-        type="button"
-        title={title}
-        className={styles[variant] || styles.default}
-        onClick={onClick}
-      >
-        {label}
-      </button>
-    )
-  }
 
   return (
     <>
