@@ -3,11 +3,17 @@ import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getValidAccessToken } from "../utils/auth.js"
 import CreateCampaignDialog from "../modals/CreateCampaignDialog.jsx"
-import { canDeploy, canPlay, canStop, canDelete } from "../utils/CampaignActions.js"
-import ActionButton from "../components/ActionButton.jsx"
 import useDebounce from "../utils/useDebounce.js"
+import CampaignRow from "../components/CampaignRow.jsx"
+import {
+  listCampaigns as apiListCampaigns,
+  createCampaign as apiCreateCampaign,
+  postCampaignAction as apiPostCampaignAction,
+  deleteCampaign as apiDeleteCampaign,
+} from "../services/campaignApi.js"
 
-const API_BASE_URL = "http://localhost:8080"
+const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL
+
 
 export default function Campaigns() {
   const navigate = useNavigate()
@@ -36,18 +42,8 @@ export default function Campaigns() {
       try {
         setLoading(true)
         setError(null)
-        const res = await fetch(`${API_BASE_URL}/account/${accountId}/campaign`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        })
-        if (!res.ok) {
-          const text = await res.text()
-          throw new Error(text || "Failed to fetch campaigns")
-        }
-        const data = await res.json()
-        setCampaigns(Array.isArray(data) ? data : [])
+        const data = await apiListCampaigns({token, accountId})
+        setCampaigns(data)
       } catch (e) {
         setError(e.message)
       } finally {
@@ -79,31 +75,13 @@ export default function Campaigns() {
     if (!token || !accountId) { navigate("/"); return }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/account/${accountId}/campaign`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      if (!res.ok) throw new Error((await res.text()) || "Failed to create empty campaign")
-
-      let created = null
-      try { created = await res.json() } catch {}
-      // prefer JSON id, fallback to Location header if needed
-      let newId = created?.campaignId
-      if (!newId) {
-        const loc = res.headers.get("Location") // e.g. .../campaign/123
-        if (loc) newId = loc.split("/").pop()
-      }
-      if (!newId) throw new Error("Server did not return campaignId")
-
+      const newId = await apiCreateCampaign({ token, accountId })
       setDraftId(newId)
       setCreateOpen(true)
     } catch (e) {
       alert(e.message)
     }
   }
-
-  // action handlers (wire APIs after you share them)
-  const stopRow = (e) => { e.stopPropagation(); e.preventDefault() }
 
   async function callCampaignAction(action, c) {
     const token = await getValidAccessToken()
@@ -112,16 +90,12 @@ export default function Campaigns() {
 
     setActing((m) => ({ ...m, [c.campaignId]: action }))
     try {
-      const url = `${API_BASE_URL}/account/${accountId}/campaign/${c.campaignId}/${action}`
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+      const updated = await apiPostCampaignAction({ 
+        token, 
+        accountId, 
+        campaignId: c.campaignId,
+        action
       })
-      if (!res.ok) {
-        const text = await res.text().catch(() => "")
-        throw new Error(text || `Failed to ${action} campaign`)
-      }
-      const updated = await res.json().catch(() => null)
       if (updated?.campaignId) {
         setCampaigns((prev) =>
           prev.map((x) => (x.campaignId === updated.campaignId ? { ...x, ...updated } : x))
@@ -151,17 +125,7 @@ export default function Campaigns() {
   if (!token || !accountId) { navigate("/"); return }
 
   try {
-    const url = `${API_BASE_URL}/account/${accountId}/campaign/${c.campaignId}`
-    const res = await fetch(url, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-
-    // 204 No Content is expected on success
-    if (res.status !== 204 && !res.ok) {
-      const text = await res.text().catch(() => "")
-      throw new Error(text || "Failed to delete campaign")
-    }
+    await apiDeleteCampaign({ token, accountId, campaignId: c.campaignId })
 
     // Optimistically remove from the list
     setCampaigns(prev => prev.filter(x => x.campaignId !== c.campaignId))
@@ -212,72 +176,25 @@ export default function Campaigns() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((c) => (
-                <tr
-                  key={c.campaignId}
-                  className="border-t hover:bg-gray-50 cursor-pointer"
-                  onClick={() => goToCampaign(c)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && goToCampaign(c)}
-                >
-                  <td className="py-2 px-4 text-left">{c.name}</td>
-                  <td className="py-2 px-4 text-left">
-                    <span className="inline-block px-2 py-1 rounded-md text-xs font-medium">
-                      {c.campaignStatus}
-                    </span>
-                  </td>
-                  <td className="py-2 px-4 text-left">
-                    {typeof c.numberOfDevices === "number" ? c.numberOfDevices : 0}
-                  </td>
-
-                  {/* Actions */}
-                  <td className="py-2 px-4 text-left">
-                    <div className="flex items-center gap-2">
-                      {canDelete(c) && (
-                        <ActionButton
-                          label="Delete"
-                          title="Delete campaign"
-                          variant="danger"
-                          onClick={(e) => { stopRow(e); handleDelete(c) }}
-                        />
-                      )}
-                      {canDeploy(c) && (
-                        <ActionButton
-                          label="Deploy"
-                          title="Deploy campaign"
-                          variant="default"
-                          onClick={(e) => { stopRow(e); handleDeploy(c) }}
-                        />
-                      )}
-                      {canPlay(c) && (
-                        <ActionButton
-                          label="Play"
-                          title="Start playback"
-                          variant="success"
-                          onClick={(e) => { stopRow(e); handlePlay(c) }}
-                        />
-                      )}
-                      {canStop(c) && (
-                        <ActionButton
-                          label="Stop"
-                          title="Stop playback"
-                          variant="warn"
-                          onClick={(e) => { stopRow(e); handleStop(c) }}
-                        />
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td className="py-6 text-center text-gray-500" colSpan="4">
-                    No campaigns found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
+            {filtered.map((c) => (
+              <CampaignRow
+                key={c.campaignId}
+                campaign={c}
+                onRowClick={goToCampaign}
+                onDeploy={handleDeploy}
+                onPlay={handlePlay}
+                onStop={handleStop}
+                onDelete={handleDelete}
+              />
+            ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td className="py-6 text-center text-gray-500" colSpan="4">
+                  No campaigns found.
+                </td>
+              </tr>
+            )}
+          </tbody>
           </table>
         )}
       </div>
