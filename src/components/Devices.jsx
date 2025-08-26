@@ -222,7 +222,7 @@ const Devices = () => {
         devices={devices}
         loading={loading}
         error={error}
-        onRetry={() => setPage(p => p)} // triggers refetch effect
+        onRetry={() => setPage(p => p)} 
       />      
 
       {/* Pagination */}

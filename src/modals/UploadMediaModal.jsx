@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import ModalShell from "./ModalShell.jsx"
 import { getValidAccessToken } from "../utils/auth.js"
+import Dropzone from "../components/Dropzone.jsx"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080"
 
@@ -11,6 +12,7 @@ export default function UploadMediaModal({ open, campaignId, onClose, onUploaded
   const [error, setError] = useState(null)
   const [uploads, setUploads] = useState([]) // [{fileName, status:'uploading'|'done'|'error', message?}]
   const fileInputRef = useRef(null)
+  const isUploading = uploads.some(u => u.status === "uploading")
 
   useEffect(() => {
     if (!open) {
@@ -102,30 +104,13 @@ export default function UploadMediaModal({ open, campaignId, onClose, onUploaded
           />
         </div>
 
-        {/* Dropzone */}
-        <div
-          onDrop={onDrop}
-          onDragOver={(e) => e.preventDefault()}
-          className="rounded-xl border-2 border-dashed border-gray-300 p-6 text-center"
-        >
-          <p className="mb-2">Drag & drop images/videos here</p>
-          <p className="text-sm text-gray-500 mb-4">…or pick from your computer</p>
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="px-3 py-2 rounded-lg border hover:bg-gray-50"
-          >
-            Choose files
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept="image/*,video/*"
-            className="hidden"
-            onChange={onPick}
-          />
-        </div>
+        <Dropzone
+            busy={isUploading   }
+            onFiles={(files) => files.forEach(f => uploadOneFile(f, defaultDuration))}
+            >
+            <p className="mb-2">Drag & drop images/videos here</p>
+            <p className="text-sm text-gray-500 mb-4">…or click to pick from your computer</p>
+        </Dropzone>         
 
         {/* Upload list */}
         {uploads.length > 0 && (

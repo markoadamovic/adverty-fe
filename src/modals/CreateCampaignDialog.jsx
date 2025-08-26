@@ -1,8 +1,9 @@
 // src/modals/CreateCampaignDialog.jsx
-import React, { useEffect, useRef, useState, useMemo } from "react"
+import React, { useEffect, useState, useMemo } from "react"
 import ModalShell from "./ModalShell.jsx"
 import AssignDevicesModal from "./AssignDevicesModal.jsx"
 import { getValidAccessToken } from "../utils/auth.js"
+import Dropzone from "../components/Dropzone.jsx"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080"
 
@@ -12,13 +13,13 @@ export default function CreateCampaignDialog({ open, campaignId, onClose, onDone
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState(null)
   const [uploads, setUploads] = useState([]) // [{fileName, status, message?}]
-  const fileInputRef = useRef(null)
+  const isUploading = uploads.some(u => u.status === "uploading")
+
    const hasUploadedContent = useMemo(
     () => uploads.some(u => u.status === "done"),
     [uploads]
   )
 
-  // NEW: child modal state
   const [assignOpen, setAssignOpen] = useState(false)
 
   // Reset when closed or when we get a fresh campaignId
@@ -78,18 +79,6 @@ export default function CreateCampaignDialog({ open, campaignId, onClose, onDone
       } finally {
         onClose(true)
       }
-  }
-
-  function onDrop(e) {
-    e.preventDefault()
-    const files = Array.from(e.dataTransfer.files || [])
-    files.forEach(f => uploadOneFile(f, defaultDuration))
-  }
-
-  function onPick(e) {
-    const files = Array.from(e.target.files || [])
-    files.forEach(f => uploadOneFile(f, defaultDuration))
-    e.target.value = "" // allow re-picking same file later
   }
 
   async function saveAndClose() {
@@ -183,24 +172,13 @@ export default function CreateCampaignDialog({ open, campaignId, onClose, onDone
             />
           </div>
 
-          {/* Dropzone */}
-          <div
-            onDrop={onDrop}
-            onDragOver={(e) => e.preventDefault()}
-            onClick={() => fileInputRef.current?.click()}
-            className="rounded-xl border-2 border-dashed border-gray-300 p-6 text-center cursor-pointer"
-          >
+          <Dropzone
+            busy={isUploading   }
+            onFiles={(files) => files.forEach(f => uploadOneFile(f, defaultDuration))}
+            >
             <p className="mb-2">Drag & drop images/videos here</p>
-            <p className="text-sm text-gray-500 mb-4">…or pick from your computer</p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*,video/*"
-              className="hidden"
-              onChange={onPick}
-            />
-          </div>
+            <p className="text-sm text-gray-500 mb-4">…or click to pick from your computer</p>
+          </Dropzone>       
 
           {/* Upload list */}
           {uploads.length > 0 && (
