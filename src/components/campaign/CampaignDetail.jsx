@@ -9,6 +9,7 @@ import UploadMediaModal from "../../modals/UploadMediaModal.jsx"
 import CampaignSummary from "./CampaignSummary.jsx"
 import DevicesTable from "../device/DevicesTable.jsx"
 import MediaItemsTable from "../MediaItemsTable.jsx"
+import CampaignActions from "./CampaignActions.jsx"
 
 const API_BASE_URL = "http://localhost:8080"
 
@@ -87,20 +88,6 @@ export default function CampaignDetail() {
         <h1 className="text-2xl font-bold">Campaign</h1>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setAssignOpen(true)}
-            className="px-3 py-2 rounded-lg border hover:bg-gray-200 cursor-pointer"
-            disabled={loading || deleting}
-          >
-            Configure devices
-          </button>
-          <button
-            onClick={() => setUploadOpen(true)}
-            className="px-3 py-2 rounded-lg border hover:bg-gray-200 cursor-pointer"
-            disabled={loading || deleting}
-          >
-            Upload content
-          </button>
-          <button
             onClick={() => navigate(-1)}
             className="px-3 py-2 rounded-lg border hover:bg-gray-200 cursor-pointer"
           >
@@ -122,7 +109,19 @@ export default function CampaignDetail() {
       {deleteError && <div className="text-red-600">{deleteError}</div>}
 
       {/* Summary */}
-      <CampaignSummary data={data} />
+      <CampaignSummary 
+        data={data} 
+        onConfigureDevices={() => setAssignOpen(true)}
+        onUploadContent={() => setUploadOpen(true)}
+        actionsDisabled={loading || deleting}
+      />
+
+      <CampaignActions
+        onConfigureDevices={() => setAssignOpen(true)}
+        onUploadContent={() => setUploadOpen(true)}
+        disabled={loading || deleting}
+        className="mt-4"
+      />
 
       {/* Devices */}
       <DevicesTable devices={data?.devices || []} />

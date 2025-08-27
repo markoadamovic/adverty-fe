@@ -26,7 +26,6 @@ export default function Campaigns() {
   // create modal state
   const [createOpen, setCreateOpen] = useState(false)
   const [draftId, setDraftId] = useState(null) // <-- id of the empty campaign we just created
-  const [acting, setActing] = useState({})
 
   // fetch data
   useEffect(() => {
@@ -84,7 +83,6 @@ export default function Campaigns() {
     const accountId = localStorage.getItem("accountId")
     if (!token || !accountId) { navigate("/"); return }
 
-    setActing((m) => ({ ...m, [c.campaignId]: action }))
     try {
       const updated = await apiPostCampaignAction({ 
         token, 
@@ -99,11 +97,6 @@ export default function Campaigns() {
       }
     } catch (err) {
       alert(err.message || `Unable to ${action} campaign`)
-    } finally {
-      setActing((m) => {
-        const { [c.campaignId]: _, ...rest } = m
-        return rest
-      })
     }
   }
 

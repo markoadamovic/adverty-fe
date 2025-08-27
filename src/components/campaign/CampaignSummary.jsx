@@ -10,7 +10,7 @@ export default function CampaignSummary({ data }) {
         </div>
         <div>
           <div className="text-gray-500 text-sm">Status</div>
-          <span className={`inline-block px-2 py-1 rounded-md text-xs font-medium`}>
+          <span className="inline-block px-2 py-1 rounded-md text-xs font-medium">
             {data.campaignStatus}
           </span>
         </div>
