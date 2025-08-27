@@ -71,7 +71,7 @@ export default function Locations() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
+      <div className="bg-white rounded-xl shadow">
         {loading && <div className="p-4 text-sm text-gray-600">Loading locations…</div>}
         {error && <div className="p-4 text-sm text-red-600 break-words">{error}</div>}
         {!loading && !error && (
