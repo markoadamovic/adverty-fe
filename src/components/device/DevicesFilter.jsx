@@ -1,5 +1,5 @@
 import React, { useId } from "react"
-import MultiSelectDropdown from "./MultiSelectDropdown.jsx"
+import MultiSelectDropdown from ".././MultiSelectDropdown.jsx"
 
 export default function DevicesFilters({
   filters,

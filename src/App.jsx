@@ -8,6 +8,7 @@ import Home from "./components/Home"
 import Locations from "./components/Locations"
 import Campaigns from "./components/campaign/Campaigns"
 import CampaignDetail from "./components/campaign/CampaignDetail"
+import Register from "./components/auth/RegisterModal.jsx"
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         {/* Public route */}
         <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Dashboard routes with sidebar */}
         <Route path="/dashboard" element={<DashboardLayout />}>
