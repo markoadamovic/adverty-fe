@@ -4,7 +4,7 @@ import Devices from "./components/device/Devices"
 import DashboardLayout from "./components/DashboardLayout"
 
 // Optional: other dashboard pages
-import Home from "./components/Home"
+import HomeDashboard from "./components/dashboard/HomeDashboard.jsx"
 import Locations from "./components/Locations"
 import Campaigns from "./components/campaign/Campaigns"
 import CampaignDetail from "./components/campaign/CampaignDetail"
@@ -20,7 +20,7 @@ function App() {
 
         {/* Dashboard routes with sidebar */}
         <Route path="/dashboard" element={<DashboardLayout />}>
-          <Route path="home" element={<Home />} />
+          <Route path="home" element={<HomeDashboard />} />
           <Route path="devices" element={<Devices />} />
           <Route path="locations" element={<Locations />} />
           <Route path="campaigns" element={<Campaigns />} />
